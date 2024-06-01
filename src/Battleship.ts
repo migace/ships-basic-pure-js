@@ -1,23 +1,30 @@
-import { Ship } from "./Ships";
+import { Ship } from "./Ship";
 import { ships } from "./constants";
-
-export const HORIZONTAL = "HORIZONTAL";
-export const VERTICAL = "VERTICAL";
+import { Direction } from "./types/battleshipt";
+import { CoordinateType } from "./types/ship";
 
 export class Battleship {
-  constructor(rows, columns) {
+  board: number[][];
+  ships: Ship[];
+
+  constructor(rows: number, columns: number) {
     this.board = new Array(rows).fill(0).map(() => new Array(columns).fill(0));
     this.ships = [];
   }
 
-  addShip(name, row, column, direction = HORIZONTAL) {
-    const coordinates = [];
+  addShip(
+    name: string,
+    row: number,
+    column: number,
+    direction = Direction.Horizontal
+  ) {
+    const coordinates: CoordinateType[] = [];
 
     for (let i = 0; i < ships[name]; i++) {
-      if (direction === HORIZONTAL) {
+      if (direction === Direction.Horizontal) {
         this.board[row][column + i] = 1;
         coordinates.push({ row, column: column + i, isHit: false });
-      } else if (direction === VERTICAL) {
+      } else if (direction === Direction.Vertical) {
         this.board[row + i][column] = 1;
         coordinates.push({ row: row + i, column, isHit: false });
       }
@@ -26,7 +33,7 @@ export class Battleship {
     this.ships.push(new Ship(name, coordinates));
   }
 
-  attack(row, column) {
+  attack(row: number, column: number) {
     if (this.board[row][column] === 1) {
       this.board[row][column] = 2;
     } else if (this.board[row][column] === 0) {
@@ -38,11 +45,11 @@ export class Battleship {
     });
   }
 
-  getSunkShips() {
+  getSunkShips(): Ship[] {
     return this.ships.filter((ship) => ship.isSunk());
   }
 
-  isGameOver() {
+  isGameOver(): boolean {
     return this.ships.every((ship) => ship.isSunk());
   }
 }
